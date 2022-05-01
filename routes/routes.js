@@ -8,7 +8,8 @@ routesRouter.get('/', (req, res, next) => {
         if (err) {
             next(err);
         } else {
-            res.status(200).send({ routes });
+            const route = {routes};
+            res.status(200).send(route.routes);
         }
     });
 })
