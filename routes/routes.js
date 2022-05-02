@@ -4,12 +4,12 @@ const { pool } = require('../dbConfig');
 
 routesRouter.get('/', (req, res, next) => {
     pool.query('SELECT * FROM routes', (err, results) => {
-        let routes = results.rows;
         if (err) {
             next(err);
         } else {
-            const route = {routes};
-            res.status(200).send(route.routes);
+            let routes = results.rows;
+            const route = routes;
+            res.status(200).send(route);
         }
     });
 })
