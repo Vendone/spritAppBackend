@@ -27,4 +27,16 @@ routesRouter.post('/', (req, res, next) => {
     })
 })
 
+routesRouter.delete('/:id', (req, res, next) => {
+    pool.query('DELETE FROM routes WHERE id=$1', [req.params.id], (err, results) => {
+        if (err) {
+            next(err);
+        } else {
+            let routes = results.rows;
+            const route = routes;
+            res.status(200).send(route);
+        }
+    });
+})
+
 module.exports = routesRouter;
