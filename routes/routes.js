@@ -18,13 +18,28 @@ routesRouter.get('/', (req, res, next) => {
 routesRouter.post('/', (req, res, next) => {
 
     const { start_point, end_point, mileage_start, mileage_stop, avg_fuel_consumption, user_id, car_id } = req.body;
-    pool.query('INSERT INTO routes (start_point, end_point, mileage_start, mileage_stop, avg_fuel_consumption, user_id, car_id) VALUES ($1, $2, $3, $4, $5, $6, $7)', [start_point, end_point, mileage_start, mileage_stop, avg_fuel_consumption, user_id, car_id], (err, results) => {
-        if (err) {
-            next(err);
-        } else {
-            res.status(201).send({ ok: 'ok' });
-        }
-    })
+    pool.query('INSERT INTO routes (start_point, end_point, mileage_start, mileage_stop, avg_fuel_consumption, user_id, car_id) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+        [start_point, end_point, mileage_start, mileage_stop, avg_fuel_consumption, user_id, car_id],
+        (err, results) => {
+            if (err) {
+                next(err);
+            } else {
+                res.status(201).send({ ok: 'ok' });
+            }
+        })
+})
+
+routesRouter.put('/:id', (req, res, next) => {
+    const { start_point, end_point, mileage_start, mileage_stop, avg_fuel_consumption, user_id, car_id } = req.body;
+    pool.query('UPDATE routes SET start_point = $1, end_point = $2, mileage_start = $3, mileage_stop = $4, avg_fuel_consumption= $5, user_id= $6, car_id=$7 WHERE id = $8',
+        [start_point, end_point, mileage_start, mileage_stop, avg_fuel_consumption, user_id, car_id, req.params.id],
+        (err, results) => {
+            if (err) {
+                next(err);
+            } else {
+                res.status(201).send({ ok: 'success' });
+            }
+        });
 })
 
 routesRouter.delete('/:id', (req, res, next) => {
