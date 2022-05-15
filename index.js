@@ -11,6 +11,7 @@ const bodyParser = require('body-parser');
 //Routes
 const routesRouter = require('./routes/routes');
 const carsRouter = require('./routes/cars');
+const usersRouter = require('./routes/user');
 
 //CORS
 // Add headers before the routes are defined
@@ -44,6 +45,7 @@ app.get('/', (req, res, next) => {
 
 app.use('/routes', routesRouter);
 app.use('/cars', carsRouter);
+app.use('/users', usersRouter);
 
 //Error handling
 app.use(function (err, req, res, next) {
