@@ -22,7 +22,7 @@ usersRouter.get('/register', checkAuthenticated, (req, res, next) => {
 
 usersRouter.get('/logout', (req, res, next) => {
     req.logout();
-    res.redirect('/');
+    res.status(200).send({ msg: 'Logged out' });
 });
 
 usersRouter.post('/register', async (req, res, next) => {
