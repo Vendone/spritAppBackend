@@ -4,7 +4,8 @@ const carsRouter = express.Router();
 const { pool } = require('../dbConfig');
 
 carsRouter.get('/', (req, res, next) => {
-    pool.query('SELECT * FROM cars ORDER BY id DESC', (err, results) => {
+    const { id } = req.body;
+    pool.query('SELECT * FROM cars WHERE user_id = $1 ORDER BY id DESC', [id], (err, results) => {
         if (err) {
             next(err);
         } else {
@@ -17,9 +18,9 @@ carsRouter.get('/', (req, res, next) => {
 
 carsRouter.post('/', (req, res, next) => {
 
-    const { license_plate, brand, modell, fuel, mileage, construction_year, description } = req.body;
+    const { license_plate, brand, modell, fuel, mileage, construction_year, description, user_id } = req.body;
     pool.query('INSERT INTO cars (license_plate, brand, modell, fuel, mileage, construction_year, description, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-        [license_plate, brand, modell, fuel, mileage, construction_year, description, 1],
+        [license_plate, brand, modell, fuel, mileage, construction_year, description, user_id],
         (err, results) => {
             if (err) {
                 next(err);
