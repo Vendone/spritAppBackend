@@ -3,9 +3,8 @@ const res = require('express/lib/response');
 const carsRouter = express.Router();
 const { pool } = require('../dbConfig');
 
-carsRouter.get('/', (req, res, next) => {
-    const { id } = req.body;
-    pool.query('SELECT * FROM cars WHERE user_id = $1 ORDER BY id DESC', [id], (err, results) => {
+carsRouter.get('/:id', (req, res, next) => {
+    pool.query('SELECT * FROM cars WHERE user_id = $1 ORDER BY id DESC', [req.params.id], (err, results) => {
         if (err) {
             next(err);
         } else {
