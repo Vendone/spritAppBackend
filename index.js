@@ -29,7 +29,7 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
 
     // Request methods you wish to allow
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
 
     // Request headers you wish to allow
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
@@ -61,7 +61,20 @@ app.get('/', (req, res, next) => {
     res.render('index');
 })
 
-app.use('/routes', routesRouter);
+app.post('/test', (req, res, next) => {
+    const { username, password } = req.body;
+    if (username && password) {
+        //nach User authentification
+        //hier kann hinzugefügt werden was man will
+        req.session.authenticated = true;
+        req.session.user = { username, password, };
+        res.status(200).send(req.session);
+    } else {
+        res.status(403).send('forbidden');
+    }
+
+});
+app.use('/routes', authorizedUser, routesRouter);
 app.use('/cars', carsRouter);
 app.use('/users', usersRouter);
 app.use('/gasstations', gasstationRouter);
@@ -77,3 +90,14 @@ app.use(function (err, req, res, next) {
 app.listen(PORT, () => {
     console.log(`Server running on Port ${PORT}`)
 });
+
+//functions
+function authorizedUser(req, res, next) {
+    // Check for the authorized property within the session
+    if (req.session.authorized) {
+        // next middleware function is invoked
+        res.next();
+    } else {
+        res.status(403).json({ msg: "You're not authorized to view this page" });
+    }
+};
