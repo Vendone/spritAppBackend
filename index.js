@@ -4,7 +4,6 @@ const { pool } = require('./dbConfig');
 require("dotenv").config();
 
 const session = require('express-session');
-const store = new session.MemoryStore();
 const passport = require('passport');
 const initializePassport = require('./passportConfig');
 const cookieParser = require('cookie-parser');
@@ -46,8 +45,7 @@ app.use(session({
     secret: SESSION_SECRET,
     cookie: { maxAge: 1000 * 60 * 60, secure: true, sameSite: 'none' }, // eine Stunde
     resave: false,
-    saveUninitialized: false,
-    store
+    saveUninitialized: false
 }));
 
 app.use(passport.initialize());
@@ -82,6 +80,7 @@ app.use('/tankstops', tankstopsRouter);
 app.get('/dashboard', (req, res, next) => {
     res.status(200).send('ok');
 })
+
 //Error handling
 app.use(function (err, req, res, next) {
     res.status(500).send({ error: 'something broke' });
