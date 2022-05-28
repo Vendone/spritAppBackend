@@ -4,12 +4,14 @@ const { pool } = require('./dbConfig');
 require("dotenv").config();
 
 const session = require('express-session');
+const store = new session.MemoryStore();
 const passport = require('passport');
 const initializePassport = require('./passportConfig');
-const PORT = process.env.PORT || 4001;
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
+const PORT = process.env.PORT;
+const SESSION_SECRET = process.env.SESSION_SECRET;
 
 //Routes
 const routesRouter = require('./routes/routes');
@@ -41,11 +43,11 @@ app.use(function (req, res, next) {
 });
 
 app.use(session({
-    secret: 'f498g78jhgkfhj$Gcg',
-    cookie: { maxAge: (1000 * 60 * 60 * 24 * 7) }, // eine Woche
-    secure: false,
+    secret: SESSION_SECRET,
+    cookie: { maxAge: 1000 * 60 * 60, secure: true, sameSite: 'none' }, // eine Stunde
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store
 }));
 
 app.use(passport.initialize());
