@@ -4,7 +4,7 @@ const carsRouter = express.Router();
 const { pool } = require('../dbConfig');
 
 carsRouter.get('/:id', (req, res, next) => {
-    pool.query('SELECT * FROM cars WHERE user_id = $1 ORDER BY id DESC', [req.params.id], (err, results) => {
+    pool.query('SELECT * FROM cars WHERE user_id = $1', [req.params.id], (err, results) => {
         if (err) {
             next(err);
         } else {

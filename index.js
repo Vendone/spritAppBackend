@@ -115,11 +115,11 @@ app.get('/test', checkAuthenticated, (req, res, next) => {
     res.status(200).send(user);
 })
 
-app.use('/routes', checkAuthenticated, routesRouter);
-app.use('/cars', checkAuthenticated, carsRouter);
-app.use('/users', checkAuthenticated, usersRouter);
-app.use('/gasstations', checkAuthenticated, gasstationRouter);
-app.use('/tankstops', checkAuthenticated, tankstopsRouter);
+app.use('/routes', routesRouter);
+app.use('/cars', carsRouter);
+app.use('/users', usersRouter);
+app.use('/gasstations', gasstationRouter);
+app.use('/tankstops', tankstopsRouter);
 
 //Error handling
 app.use(function (err, req, res, next) {
