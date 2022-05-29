@@ -3,7 +3,7 @@ const tankstopsRouter = express.Router();
 const { pool } = require('../dbConfig');
 
 tankstopsRouter.get('/', (req, res, next) => {
-    pool.query('SELECT * FROM tank_stops', (err, results) => {
+    pool.query('SELECT * FROM tank_stops WHERE user_id = 1', (err, results) => {
         if (err) {
             next(err);
         } else {
