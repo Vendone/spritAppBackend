@@ -1,10 +1,17 @@
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config()
+}
+
 const express = require('express');
 const app = express();
-require("dotenv").config();
 
 const session = require('express-session');
 const passport = require('passport');
 const initializePassport = require('./passportConfig');
+const bcrypt = require('bcrypt');
+const flash = require('express-flash');
+const { pool } = require('./dbConfig');
+const path = require("path");
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const PORT = process.env.PORT;
@@ -17,7 +24,22 @@ const usersRouter = require('./routes/user');
 const gasstationRouter = require('./routes/gasstation');
 const tankstopsRouter = require('./routes/tankstops');
 
-initializePassport(passport);
+app.use(logger('dev'));
+app.use(express.json());
+app.use(cookieParser());
+
+app.set('view-engine', 'ejs');
+app.use(express.urlencoded({ extended: false }))
+app.use(flash());
+
+initializePassport(
+    passport,
+    email => users.find(user => user.email === email),
+    id => users.find(user => user.id === id)
+);
+
+const users = [];
+
 //CORS
 // Add headers before the routes are defined
 app.use(function (req, res, next) {
@@ -39,9 +61,9 @@ app.use(function (req, res, next) {
     next();
 });
 
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
     secret: SESSION_SECRET,
-    cookie: { maxAge: 1000 * 60 * 60, secure: true, sameSite: 'none' }, // eine Stunde
     resave: false,
     saveUninitialized: false
 }));
@@ -49,52 +71,74 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(cookieParser());
-
-app.get('/', (req, res, next) => {
-    res.render('index');
+app.get('/', checkAuthenticated, (req, res, next) => {
+    res.render('index.ejs', { name: req.user.email });
 })
 
-app.post('/test', (req, res, next) => {
-    const { username, password } = req.body;
-    if (username && password) {
-        //nach User authentification
-        //hier kann hinzugefügt werden was man will
-        req.session.authenticated = true;
-        req.session.user = { username, password, };
-        res.status(200).send(req.session);
-    } else {
-        res.status(403).send('forbidden');
+app.get('/login', checkNotAuthenticated, (req, res, next) => {
+    res.render('login.ejs');
+})
+
+app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/login',
+    failureFlash: true
+}))
+
+app.get('/register', checkNotAuthenticated, (req, res, next) => {
+    res.render('register.ejs');
+})
+
+app.post('/register', checkNotAuthenticated, async (req, res) => {
+    try {
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        users.push({
+            id: Date.now().toString(),
+            name: req.body.name,
+            email: req.body.email,
+            password: hashedPassword
+        });
+        res.redirect('/login');
+    } catch {
+        res.redirect('/register');
     }
-
-});
-app.use('/routes', authorizedUser, routesRouter);
-app.use('/cars', carsRouter);
-app.use('/users', usersRouter);
-app.use('/gasstations', gasstationRouter);
-app.use('/tankstops', tankstopsRouter);
-app.get('/dashboard', (req, res, next) => {
-    res.status(200).send('ok');
 })
+
+app.post('/logout', (req, res) => {
+    req.logOut();
+    res.redirect('/login');
+})
+
+app.get('/test', checkAuthenticated, (req, res, next) => {
+    const user = req.user;
+    res.status(200).send(user);
+})
+
+app.use('/routes', checkAuthenticated, routesRouter);
+app.use('/cars', checkAuthenticated, carsRouter);
+app.use('/users', checkAuthenticated, usersRouter);
+app.use('/gasstations', checkAuthenticated, gasstationRouter);
+app.use('/tankstops', checkAuthenticated, tankstopsRouter);
 
 //Error handling
 app.use(function (err, req, res, next) {
     res.status(500).send({ error: 'something broke' });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on Port ${PORT}`)
-});
+app.listen(PORT, () => console.log(`Listening on http://localhost:${PORT}`));
 
 //functions
-function authorizedUser(req, res, next) {
-    // Check for the authorized property within the session
-    if (req.session.authorized) {
-        // next middleware function is invoked
-        res.next();
-    } else {
-        res.status(403).json({ msg: "You're not authorized to view this page" });
+function checkAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
     }
-};
+
+    res.redirect('/login');
+}
+
+function checkNotAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return res.redirect('/');
+    }
+    next();
+}
