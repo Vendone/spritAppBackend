@@ -4,7 +4,7 @@ const routesRouter = express.Router();
 const { pool } = require('../dbConfig');
 
 routesRouter.get('/', (req, res, next) => {
-    pool.query('SELECT * FROM routes ORDER BY date DESC', (err, results) => {
+    pool.query('SELECT * FROM routes WHERE user_id = 1', (err, results) => {
         if (err) {
             next(err);
         } else {
