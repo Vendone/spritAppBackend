@@ -72,7 +72,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get('/', checkAuthenticated, (req, res, next) => {
-    res.render('index.ejs', { name: req.user.email });
+    res.render('index.ejs', { userID: req.user.id });
 })
 
 app.get('/login', checkNotAuthenticated, (req, res, next) => {
@@ -80,7 +80,7 @@ app.get('/login', checkNotAuthenticated, (req, res, next) => {
 })
 
 app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
-    successRedirect: '/',
+    successRedirect: 'http://localhost:3000/dashboard',
     failureRedirect: '/login',
     failureFlash: true
 }))
@@ -93,8 +93,9 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         users.push({
-            id: Date.now().toString(),
-            name: req.body.name,
+            id: 1,
+            first_name: req.body.first_name,
+            last_name: req.body.last_name,
             email: req.body.email,
             password: hashedPassword
         });
