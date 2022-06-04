@@ -1,10 +1,10 @@
 const express = require('express');
-const res = require('express/lib/response');
 const routesRouter = express.Router();
 const { pool } = require('../dbConfig');
 
 routesRouter.get('/', (req, res, next) => {
-    pool.query('SELECT * FROM routes WHERE user_id = $1', [req.session.passport.user], (err, results) => {
+    const user = req.session.passport.user.id;
+    pool.query('SELECT * FROM routes WHERE user_id = $1', [user], (err, results) => {
         if (err) {
             next(err);
         } else {
@@ -52,6 +52,11 @@ routesRouter.delete('/:id', (req, res, next) => {
             res.status(200).send(route);
         }
     });
+})
+
+routesRouter.get('/test', (req, res, next) => {
+    const user = req.session.passport.user.id;
+    res.status(200).send({ user });
 })
 
 module.exports = routesRouter;

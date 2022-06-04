@@ -4,6 +4,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const path = require("path");
 app.use(express.static(path.join(__dirname, 'public')));
 const flash = require('express-flash');
@@ -15,6 +16,7 @@ const logger = require('morgan');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors());
 const PORT = process.env.PORT;
 
 const session = require('express-session');
@@ -26,7 +28,7 @@ app.use(session({
     saveUninitialized: false,
     sameSite: 'none',
     secure: true,
-    cookie: { path: '/', httpOnly: false, secure: false, maxAge: null }
+    cookie: { path: '/', httpOnly: false, secure: false, maxAge: 100 * 60 * 60 * 24 }
 }));
 
 //Routes
