@@ -2,7 +2,6 @@ const express = require('express');
 const usersRouter = express.Router();
 const { pool } = require('../dbConfig');
 const passport = require('passport');
-const initializePassport = require('../passportConfig');
 const bcrypt = require('bcrypt');
 
 usersRouter.get('/', (req, res, next) => {

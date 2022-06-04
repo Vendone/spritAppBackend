@@ -17,13 +17,20 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
+const { pool } = require('./dbConfig');
 const PORT = process.env.PORT;
 
 const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
 const SESSION_SECRET = process.env.SESSION_SECRET;
 
 app.use(session({
     secret: SESSION_SECRET,
+    store: new pgSession({
+        pool: pool,                // Connection pool
+        tableName: 'user_sessions'   // Use another table-name than the default "session" one
+        // Insert connect-pg-simple options here
+    }),
     resave: false,
     saveUninitialized: false,
     sameSite: 'none',
@@ -56,3 +63,4 @@ app.use(function (err, req, res, next) {
 });
 
 app.listen(PORT, () => console.log(`Listening on http://localhost:${PORT}`));
+

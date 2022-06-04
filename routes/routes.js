@@ -4,6 +4,7 @@ const { pool } = require('../dbConfig');
 
 routesRouter.get('/', (req, res, next) => {
     const user = req.session.passport.user.id;
+    console.log(user);
     pool.query('SELECT * FROM routes WHERE user_id = $1', [user], (err, results) => {
         if (err) {
             next(err);
