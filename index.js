@@ -15,7 +15,7 @@ const logger = require('morgan');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: ['http://192.168.0.233:4001', 'http://192.168.0.233:3000', 'http://localhost:3000', 'http://localhost:4001'],
     credentials: true
 }));
 const { pool } = require('./dbConfig');
