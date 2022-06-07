@@ -11,12 +11,13 @@ const flash = require('express-flash');
 app.set('view-engine', 'ejs');
 app.use(express.urlencoded({ extended: false }))
 app.use(flash());
-const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 app.use(logger('dev'));
 app.use(express.json());
-app.use(cookieParser());
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true
+}));
 const { pool } = require('./dbConfig');
 const PORT = process.env.PORT;
 
@@ -52,6 +53,11 @@ app.use('/cars', carsRouter);
 app.use('/users', usersRouter);
 app.use('/gasstations', gasstationRouter);
 app.use('/tankstops', tankstopsRouter);
+
+
+app.get('/', (req, res, next) => {
+    res.redirect('http://localhost:3000');
+})
 
 app.get('/test', (req, res, next) => {
     const user = req.session.passport.user;
