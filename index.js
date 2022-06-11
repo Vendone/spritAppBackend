@@ -112,10 +112,10 @@ app.post('/logout', (req, res) => {
 
 app.get('/test', async (req, res, next) => {
     try {
-        const response = await pool.query('INSERT INTO gasstations (name, location) VALUES (test, test) RETURNING *');
-        res.status(200).send(response);
+        const response = await pool.query('INSERT INTO gasstations (name, location) VALUES ($1, $2)', ['test', 'test']);
+        res.status(200).send({ ok: 'ok' });
     } catch (error) {
-        res.status(500).send(error);
+        res.status(500).send('error');
     }
 })
 
