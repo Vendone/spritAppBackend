@@ -110,9 +110,13 @@ app.post('/logout', (req, res) => {
     res.redirect('/login');
 })
 
-app.get('/test', checkAuthenticated, (req, res, next) => {
-    const user = req.user;
-    res.status(200).send(user);
+app.get('/test', async (req, res, next) => {
+    try {
+        const response = await pool.query('INSERT INTO gasstations (name, location) VALUES (test, test) RETURNING *');
+        res.status(200).send(response);
+    } catch (error) {
+        res.status(500).send(error);
+    }
 })
 
 app.use('/routes', routesRouter);
