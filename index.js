@@ -42,8 +42,7 @@ app.use(session({
 
 app.use(expressCspHeader({
     directives: {
-        'default-src': [SELF, 'https://ka-f.fontawesome.com/'],
-        'font-src': [SELF, 'https://fonts.gstatic.com/'],
+        'default-src': [SELF, 'https://ka-f.fontawesome.com/', 'https://fonts.gstatic.com/'],
         'script-src': [SELF, INLINE, process.env.FRONTEND_URL, 'https://kit.fontawesome.com'],
         'style-src': [SELF, INLINE, process.env.FRONTEND_URL, 'https://fonts.googleapis.com/'],
         'img-src': ['data:', process.env.SERVER_URL],
