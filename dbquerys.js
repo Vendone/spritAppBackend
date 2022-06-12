@@ -32,10 +32,15 @@ const postData = async (resource, attributeString, insertBody) => {
     }
 }
 
-const putById = async (resource, insertBody) => {
+const putById = async (resource, whichData, insertBody) => {
+    let value = '';
+    for (let i = 0; i < whichData.length; i++) {
+        value = value + ', ' + whichData[i] + '=' + '$' + [i + 1];
+    }
+    value = value.slice(2, value.length);
     try {
         const client = await pool.connect();
-        const result = await client.query(`UPDATE ${resource} SET name = $1, location = $2 WHERE id = $3`, insertBody); //insertBody [attribute1, attribute2,...]
+        const result = await client.query(`UPDATE ${resource} SET ${value} WHERE id = $${whichData.length + 1}`, insertBody); //insertBody [attribute1, attribute2,...]
         return `Item ${insertBody[2]} edited`;
         client.release();
     } catch (err) {
