@@ -47,22 +47,57 @@ const gasstationRouter = require('./routes/gasstation');
 const tankstopsRouter = require('./routes/tankstops');
 const authLocal = require('./routes/auth/local');
 
-app.use('/auth', authLocal);
-app.use('/routes', routesRouter);
-app.use('/cars', carsRouter);
-app.use('/users', usersRouter);
-app.use('/gasstations', gasstationRouter);
-app.use('/tankstops', tankstopsRouter);
+app.use(passport.initialize());
+app.use(passport.session());
 
-
-app.get('/', (req, res, next) => {
-    res.redirect('http://localhost:3000');
+app.get('/', checkAuthenticated, (req, res, next) => {
+    res.render('index.ejs', { userID: req.user.id });
 })
 
-app.get('/test', (req, res, next) => {
-    const user = req.session.passport.user;
-    res.status(200).send(user);
+app.get('/login', checkNotAuthenticated, (req, res, next) => {
+    res.render('login.ejs');
 })
+
+app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
+    successRedirect: 'http://localhost:3000/dashboard',
+    failureRedirect: '/login',
+    failureFlash: true
+}))
+
+app.get('/register', checkNotAuthenticated, (req, res, next) => {
+    res.render('register.ejs');
+})
+
+app.post('/register', checkNotAuthenticated, async (req, res) => {
+    try {
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        users.push({
+            id: 1,
+            first_name: req.body.first_name,
+            last_name: req.body.last_name,
+            email: req.body.email,
+            password: hashedPassword
+        });
+        res.redirect('/login');
+    } catch {
+        res.redirect('/register');
+    }
+})
+
+app.post('/logout', (req, res) => {
+    req.logOut();
+    res.redirect('/login');
+})
+
+app.get('/test', async (req, res, next) => {
+    try {
+        const response = await pool.query('INSERT INTO gasstations (name, location) VALUES ($1, $2)', ['test', 'test']);
+        res.status(200).send({ ok: 'ok' });
+    } catch (error) {
+        res.status(500).send(error);
+    }
+})
+
 //Error handling
 app.use(function (err, req, res, next) {
     res.status(500).send({ error: 'something broke' });
