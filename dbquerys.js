@@ -13,9 +13,17 @@ const getData = async (resource) => {
 }
 
 const postData = async (resource, attributeString, insertBody) => {
+    const attributeStringArray = attributeString.split(', ');
+    let value = '';
+    for (let i = 1; i <= attributeStringArray.length; i++) {
+        value = value + '$' + i + ',';
+    }
+    const length = value.length;
+    value = value.slice(0, length - 1);
+
     try {
         const client = await pool.connect();
-        const result = await client.query(`INSERT INTO ${resource} (${attributeString}) VALUES ($1, $2)`, insertBody); //insertBody [attribute1, attribute2,...]
+        const result = await client.query(`INSERT INTO ${resource} (${attributeString}) VALUES (${value})`, insertBody); //insertBody [attribute1, attribute2,...]
         return 'ok';
         client.release();
     } catch (err) {
