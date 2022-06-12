@@ -22,7 +22,6 @@ gasstationsRouter.post('/', (req, res, next) => {
             if (err) {
                 next(err);
             } else {
-
                 res.status(201).send('ok');
             }
         })

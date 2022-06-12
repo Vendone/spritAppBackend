@@ -17,7 +17,6 @@ routesRouter.get('/', (req, res, next) => {
 })
 
 routesRouter.post('/', (req, res, next) => {
-
     const { start_point, end_point, mileage_start, mileage_stop, avg_fuel_consumption, user_id, car_id } = req.body;
     pool.query('INSERT INTO routes (start_point, end_point, mileage_start, mileage_stop, avg_fuel_consumption, user_id, car_id) VALUES ($1, $2, $3, $4, $5, $6, $7)',
         [start_point, end_point, mileage_start, mileage_stop, avg_fuel_consumption, user_id, car_id],

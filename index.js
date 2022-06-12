@@ -15,7 +15,7 @@ const logger = require('morgan');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(cors({
-    origin: ['http://192.168.0.233:4001', 'http://192.168.0.233:3000', 'http://localhost:3000', 'http://localhost:4001'],
+    origin: [process.env.SERVER_URL, process.env.FRONTEND_URL],
     credentials: true
 }));
 const { pool } = require('./dbConfig');
@@ -47,46 +47,8 @@ const gasstationRouter = require('./routes/gasstation');
 const tankstopsRouter = require('./routes/tankstops');
 const authLocal = require('./routes/auth/local');
 
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.get('/', checkAuthenticated, (req, res, next) => {
+app.get('/', (req, res, next) => {
     res.render('index.ejs', { userID: req.user.id });
-})
-
-app.get('/login', checkNotAuthenticated, (req, res, next) => {
-    res.render('login.ejs');
-})
-
-app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
-    successRedirect: 'http://localhost:3000/dashboard',
-    failureRedirect: '/login',
-    failureFlash: true
-}))
-
-app.get('/register', checkNotAuthenticated, (req, res, next) => {
-    res.render('register.ejs');
-})
-
-app.post('/register', checkNotAuthenticated, async (req, res) => {
-    try {
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        users.push({
-            id: 1,
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
-            email: req.body.email,
-            password: hashedPassword
-        });
-        res.redirect('/login');
-    } catch {
-        res.redirect('/register');
-    }
-})
-
-app.post('/logout', (req, res) => {
-    req.logOut();
-    res.redirect('/login');
 })
 
 app.get('/test', async (req, res, next) => {

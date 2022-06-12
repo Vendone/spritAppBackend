@@ -42,7 +42,7 @@ authRouter.get('/login', (req, res, next) => {
 })
 
 authRouter.post('/login', passport.authenticate('local', {
-    successRedirect: 'http://localhost:3000/dashboard',
+    successRedirect: process.env.SERVER_URL + '/dashboard',
     failureRedirect: '/auth/login',
     failureFlash: true
 }))
@@ -73,12 +73,5 @@ authRouter.post('/logout', (req, res, next) => {
         res.redirect('/auth/login');
     });
 })
-
-authRouter.get('/test', (req, res, next) => {
-    const user = req.session.passport.user;
-    res.status(200).send(user);
-})
-
-//functions
 
 module.exports = authRouter;

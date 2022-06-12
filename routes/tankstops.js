@@ -15,7 +15,6 @@ tankstopsRouter.get('/', (req, res, next) => {
 })
 
 tankstopsRouter.post('/', (req, res, next) => {
-
     const { gasstation_id, fuel, amount, price, milage, date, user_id, car_id } = req.body;
     pool.query('INSERT INTO tank_stops (gasstation_id, fuel, amount, price, milage, date, user_id, car_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
         [gasstation_id, fuel, amount, price, milage, date, user_id, car_id],
@@ -23,7 +22,6 @@ tankstopsRouter.post('/', (req, res, next) => {
             if (err) {
                 next(err);
             } else {
-
                 res.status(201).send('ok');
             }
         })
