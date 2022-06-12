@@ -2,18 +2,18 @@ const express = require('express');
 const routesRouter = express.Router();
 const { pool } = require('../dbConfig');
 
-routesRouter.get('/', (req, res, next) => {
-    const user = req.session.passport.user.id;
-    console.log(user);
-    pool.query('SELECT * FROM routes WHERE user_id = $1', [user], (err, results) => {
-        if (err) {
-            next(err);
-        } else {
-            let routes = results.rows;
-            const route = routes;
-            res.status(200).send(route);
-        }
-    });
+routesRouter.get('/', async (req, res, next) => {
+    try {
+        const client = await pool.connect();
+        const result = await client.query('SELECT * FROM routes WHERE user_id = $1', [1]);
+        const results = { 'results': (result) ? result.rows : null };
+        res.status(200).send(results);
+        client.release();
+    } catch (err) {
+        console.error(err);
+        res.send("Error " + err);
+    }
+
 })
 
 routesRouter.post('/', (req, res, next) => {
