@@ -13,7 +13,6 @@ routesRouter.get('/', async (req, res, next) => {
         console.error(err);
         res.send("Error " + err);
     }
-
 })
 
 routesRouter.post('/', (req, res, next) => {
