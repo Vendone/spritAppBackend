@@ -1,8 +1,22 @@
 const { pool } = require('./dbConfig');
+
 const getData = async (resource) => {
     try {
         const client = await pool.connect();
         const result = await client.query(`SELECT * FROM ${resource}`);
+        const results = { 'results': (result) ? result.rows : null };
+        return results;
+        client.release();
+    } catch (err) {
+        console.error(err);
+        return "Error " + err;
+    }
+}
+
+const getDataById = async (resource, id) => {
+    try {
+        const client = await pool.connect();
+        const result = await client.query(`SELECT * FROM ${resource} WHERE user_id = $1`, [id]);
         const results = { 'results': (result) ? result.rows : null };
         return results;
         client.release();
@@ -61,4 +75,4 @@ const deleteById = async (resource, id) => {
     }
 }
 
-module.exports = { getData, postData, putById, deleteById };
+module.exports = { getData, getDataById, postData, putById, deleteById };

@@ -2,17 +2,11 @@ const express = require('express');
 const res = require('express/lib/response');
 const carsRouter = express.Router();
 const { pool } = require('../dbConfig');
+const { getDataById } = require('../dbquerys');
 
-carsRouter.get('/:id', (req, res, next) => {
-    pool.query('SELECT * FROM cars WHERE user_id = $1', [req.params.id], (err, results) => {
-        if (err) {
-            next(err);
-        } else {
-            let cars = results.rows;
-            const car = cars;
-            res.status(200).send(car);
-        }
-    });
+carsRouter.get('/:id', async (req, res, next) => {
+    const response = await getDataById('cars', req.params.id);
+    res.status(200).send(response);
 })
 
 carsRouter.post('/', (req, res, next) => {
