@@ -2,29 +2,30 @@ const express = require('express');
 const gasstationsRouter = express.Router();
 const { pool } = require('../dbConfig');
 
-gasstationsRouter.get('/', (req, res, next) => {
-    pool.query('SELECT * FROM gasstations', (err, results) => {
-        if (err) {
-            next(err);
-        } else {
-            let users = results.rows;
-            const user = users;
-            res.status(200).send(user);
-        }
-    });
+gasstationsRouter.get('/', async (req, res, next) => {
+    try {
+        const client = await pool.connect();
+        const result = await client.query('SELECT * FROM gasstations');
+        const results = { 'results': (result) ? result.rows : null };
+        res.status(200).send(results);
+        client.release();
+    } catch (err) {
+        console.error(err);
+        res.send("Error " + err);
+    }
 })
 
-gasstationsRouter.post('/', (req, res, next) => {
+gasstationsRouter.post('/', async (req, res, next) => {
     const { name, location } = req.body;
-    pool.query('INSERT INTO gasstations (name, location) VALUES ($1, $2)',
-        [name, location],
-        (err, results) => {
-            if (err) {
-                next(err);
-            } else {
-                res.status(201).send('ok');
-            }
-        })
+    try {
+        const client = await pool.connect();
+        const result = await client.query('INSERT INTO gasstations (name, location) VALUES ($1, $2)', [name, location]);
+        res.status(201).send('ok');
+        client.release();
+    } catch (err) {
+        console.error(err);
+        res.send("Error " + err);
+    }
 })
 
 gasstationsRouter.put('/:id', (req, res, next) => {
