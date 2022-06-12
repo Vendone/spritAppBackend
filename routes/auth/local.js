@@ -42,7 +42,7 @@ authRouter.get('/login', (req, res, next) => {
 })
 
 authRouter.post('/login', passport.authenticate('local', {
-    successRedirect: process.env.SERVER_URL + '/dashboard',
+    successRedirect: process.env.FRONTEND_URL + '/dashboard',
     failureRedirect: '/auth/login',
     failureFlash: true
 }))

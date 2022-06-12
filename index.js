@@ -51,6 +51,14 @@ app.get('/', (req, res, next) => {
     res.status(200).send('Hi there, I`m fine.');
 })
 
+
+app.use('/routes', routesRouter)
+app.use('/cars', carsRouter)
+app.use('/user', usersRouter)
+app.use('/gasstation', gasstationRouter)
+app.use('/tankstpos', tankstopsRouter)
+app.use('/auth', authLocal)
+
 app.get('/test', async (req, res, next) => {
     try {
         const response = await pool.query('INSERT INTO gasstations (name, location) VALUES ($1, $2)', ['test', 'test']);
