@@ -66,8 +66,8 @@ app.get('/', (req, res, next) => {
 app.use('/routes', routesRouter)
 app.use('/cars', carsRouter)
 app.use('/user', usersRouter)
-app.use('/gasstation', gasstationRouter)
-app.use('/tankstpos', tankstopsRouter)
+app.use('/gasstations', gasstationRouter)
+app.use('/tankstops', tankstopsRouter)
 app.use('/auth', authLocal)
 
 app.get('/test', async (req, res, next) => {
