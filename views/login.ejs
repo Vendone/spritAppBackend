@@ -8,10 +8,10 @@
                 <% if (messages.error) { %>
                     <%= messages.error %>
                         <% } %>
-                            <form action="/login" method="POST">
+                            <form action="/auth/login" method="POST">
                                 <div class="login__field">
                                     <i class="login__icon fas fa-envelope"></i>
-                                    <input type="email" name="email" class="login__input" placeholder="Email"
+                                    <input type="email" name="username" class="login__input" placeholder="Email"
                                         required />
                                 </div>
                                 <div class="login__field">

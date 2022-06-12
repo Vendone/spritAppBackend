@@ -4,18 +4,40 @@ if (process.env.NODE_ENV !== 'production') {
 
 const express = require('express');
 const app = express();
+const cors = require('cors');
+const path = require("path");
+app.use(express.static(path.join(__dirname, 'public')));
+const flash = require('express-flash');
+app.set('view-engine', 'ejs');
+app.use(express.urlencoded({ extended: false }))
+app.use(flash());
+const logger = require('morgan');
+app.use(logger('dev'));
+app.use(express.json());
+app.use(cors({
+    origin: ['http://192.168.0.233:4001', 'http://192.168.0.233:3000', 'http://localhost:3000', 'http://localhost:4001'],
+    credentials: true
+}));
+const { pool } = require('./dbConfig');
+const PORT = process.env.PORT;
 
 const session = require('express-session');
-const passport = require('passport');
-const initializePassport = require('./passportConfig');
-const bcrypt = require('bcrypt');
-const flash = require('express-flash');
-const { pool } = require('./dbConfig');
-const path = require("path");
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
-const PORT = process.env.PORT;
+const pgSession = require('connect-pg-simple')(session);
 const SESSION_SECRET = process.env.SESSION_SECRET;
+
+app.use(session({
+    secret: SESSION_SECRET,
+    store: new pgSession({
+        pool: pool,                // Connection pool
+        tableName: 'user_sessions'   // Use another table-name than the default "session" one
+        // Insert connect-pg-simple options here
+    }),
+    resave: false,
+    saveUninitialized: false,
+    sameSite: 'none',
+    secure: true,
+    cookie: { path: '/', httpOnly: false, secure: false, maxAge: 100 * 60 * 60 * 24 }
+}));
 
 //Routes
 const routesRouter = require('./routes/routes');
@@ -23,50 +45,7 @@ const carsRouter = require('./routes/cars');
 const usersRouter = require('./routes/user');
 const gasstationRouter = require('./routes/gasstation');
 const tankstopsRouter = require('./routes/tankstops');
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(cookieParser());
-
-app.set('view-engine', 'ejs');
-app.use(express.urlencoded({ extended: false }))
-app.use(flash());
-
-initializePassport(
-    passport,
-    email => users.find(user => user.email === email),
-    id => users.find(user => user.id === id)
-);
-
-const users = [];
-
-//CORS
-// Add headers before the routes are defined
-app.use(function (req, res, next) {
-
-    // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-
-    // Request methods you wish to allow
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-
-    // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-
-    // Set to true if you need the website to include cookies in the requests sent
-    // to the API (e.g. in case you use sessions)
-    res.setHeader('Access-Control-Allow-Credentials', true);
-
-    // Pass to next layer of middleware
-    next();
-});
-
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({
-    secret: SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false
-}));
+const authLocal = require('./routes/auth/local');
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -119,12 +98,6 @@ app.get('/test', async (req, res, next) => {
     }
 })
 
-app.use('/routes', routesRouter);
-app.use('/cars', carsRouter);
-app.use('/users', usersRouter);
-app.use('/gasstations', gasstationRouter);
-app.use('/tankstops', tankstopsRouter);
-
 //Error handling
 app.use(function (err, req, res, next) {
     res.status(500).send({ error: 'something broke' });
@@ -132,18 +105,3 @@ app.use(function (err, req, res, next) {
 
 app.listen(PORT, () => console.log(`Listening on http://localhost:${PORT}`));
 
-//functions
-function checkAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-
-    res.redirect('/login');
-}
-
-function checkNotAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-        return res.redirect('http://localhost:3000');
-    }
-    next();
-}
