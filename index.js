@@ -43,7 +43,7 @@ app.use(session({
 app.use(expressCspHeader({
     directives: {
         'default-src': [SELF],
-        'script-src': [SELF, INLINE, process.env.FRONTEND_URL],
+        'script-src': [SELF, INLINE, process.env.FRONTEND_URL, 'https://kit.fontawesome.com'],
         'style-src': [SELF, process.env.FRONTEND_URL],
         'img-src': ['data:', process.env.SERVER_URL],
         'worker-src': [NONE],
