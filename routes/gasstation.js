@@ -17,7 +17,7 @@ gasstationsRouter.post('/', async (req, res, next) => {
 gasstationsRouter.put('/:id', async (req, res, next) => {
     const { name, location } = req.body;
     const id = req.params.id;
-    const response = await putById('gasstations', [name, location, id]);
+    const response = await putById('gasstations', ['name', 'location'], [name, location, id]);
     res.status(201).send(response);
 })
 
