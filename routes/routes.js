@@ -15,17 +15,18 @@ routesRouter.get('/', async (req, res, next) => {
     }
 })
 
-routesRouter.post('/', (req, res, next) => {
+routesRouter.post('/', async (req, res, next) => {
     const { start_point, end_point, mileage_start, mileage_stop, avg_fuel_consumption, user_id, car_id } = req.body;
-    pool.query('INSERT INTO routes (start_point, end_point, mileage_start, mileage_stop, avg_fuel_consumption, user_id, car_id) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-        [start_point, end_point, mileage_start, mileage_stop, avg_fuel_consumption, user_id, car_id],
-        (err, results) => {
-            if (err) {
-                next(err);
-            } else {
-                res.status(201).send({ ok: 'ok' });
-            }
-        })
+    try {
+        const client = await pool.connect();
+        const result = await client.query('INSERT INTO routes (start_point, end_point, mileage_start, mileage_stop, avg_fuel_consumption, user_id, car_id) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+            [start_point, end_point, mileage_start, mileage_stop, avg_fuel_consumption, user_id, car_id]);
+        res.status(201).send({ ok: 'ok' });
+        client.release();
+    } catch (err) {
+        console.error(err);
+        res.send("Error " + err);
+    }
 })
 
 routesRouter.put('/:id', (req, res, next) => {
