@@ -1,7 +1,5 @@
 const express = require('express');
-const res = require('express/lib/response');
 const carsRouter = express.Router();
-const { pool } = require('../dbConfig');
 const { getDataById, postData, putById, deleteById } = require('../dbquerys');
 
 carsRouter.get('/:id', async (req, res, next) => {
