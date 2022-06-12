@@ -14,6 +14,7 @@ app.use(flash());
 const logger = require('morgan');
 app.use(logger('dev'));
 app.use(express.json());
+const { expressCspHeader, INLINE, NONE, SELF } = require('express-csp-header');
 app.use(cors({
     origin: [process.env.SERVER_URL, process.env.FRONTEND_URL],
     credentials: true
@@ -37,6 +38,17 @@ app.use(session({
     sameSite: 'none',
     secure: true,
     cookie: { path: '/', httpOnly: false, secure: false, maxAge: 100 * 60 * 60 * 24 }
+}));
+
+app.use(expressCspHeader({
+    directives: {
+        'default-src': [SELF],
+        'script-src': [SELF, INLINE, process.env.FRONTEND_URL],
+        'style-src': [SELF, process.env.FRONTEND_URL],
+        'img-src': ['data:', process.env.SERVER_URL],
+        'worker-src': [NONE],
+        'block-all-mixed-content': true
+    }
 }));
 
 //Routes
