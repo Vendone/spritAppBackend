@@ -37,7 +37,7 @@ app.use(session({
     saveUninitialized: false,
     sameSite: 'none',
     secure: true,
-    cookie: { path: '/', httpOnly: false, secure: false, maxAge: 100 * 60 * 60 * 24 }
+    cookie: { path: '/', httpOnly: false, secure: true, sameSite: 'none', maxAge: 100 * 60 * 60 * 24 }
 }));
 
 app.use(expressCspHeader({
@@ -62,7 +62,6 @@ const authLocal = require('./routes/auth/local');
 app.get('/', (req, res, next) => {
     res.status(200).send('Hi there, I`m fine.');
 })
-
 
 app.use('/routes', routesRouter)
 app.use('/cars', carsRouter)
