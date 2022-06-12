@@ -4,6 +4,7 @@ const { pool } = require('../../dbConfig');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
+const { getData, postData, putById, deleteById } = require('../../dbquerys');
 
 passport.use(new LocalStrategy(function verify(username, password, done) {
     pool.query('SELECT * FROM users WHERE email = $1', [username], (error, results) => {
@@ -54,13 +55,7 @@ authRouter.get('/register', (req, res, next) => {
 authRouter.post('/register', async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        users.push({
-            id: 1,
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
-            email: req.body.email,
-            password: hashedPassword
-        });
+        const result = await pool.query('INSERT INTO users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4)', [req.body.first_name, req.body.last_name, req.body.email, hashedPassword]);
         res.redirect('/auth/login');
     } catch {
         res.redirect('/auth/register');

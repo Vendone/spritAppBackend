@@ -42,12 +42,12 @@ app.use(session({
 
 app.use(expressCspHeader({
     directives: {
-        'default-src': [SELF],
+        'default-src': [SELF, 'https://ka-f.fontawesome.com/'],
         'script-src': [SELF, INLINE, process.env.FRONTEND_URL, 'https://kit.fontawesome.com'],
-        'style-src': [SELF, process.env.FRONTEND_URL],
+        'style-src': [SELF, process.env.FRONTEND_URL, 'https://fonts.googleapis.com/'],
         'img-src': ['data:', process.env.SERVER_URL],
         'worker-src': [NONE],
-        'block-all-mixed-content': true
+        'block-all-mixed-content': false
     }
 }));
 
