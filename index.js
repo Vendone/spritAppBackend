@@ -72,10 +72,14 @@ app.use('/auth', authLocal)
 
 app.get('/test', async (req, res, next) => {
     try {
-        const response = await pool.query('SELECT * FROM gasstations;');
-        res.status(200).send({ ok: 'ok' });
-    } catch (error) {
-        res.status(500).send(error);
+        const client = await pool.connect();
+        const result = await client.query('SELECT * FROM gasstations');
+        const results = { 'results': (result) ? result.rows : null };
+        res.status(200).send(results);
+        client.release();
+    } catch (err) {
+        console.error(err);
+        res.send("Error " + err);
     }
 })
 
