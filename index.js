@@ -48,7 +48,7 @@ const tankstopsRouter = require('./routes/tankstops');
 const authLocal = require('./routes/auth/local');
 
 app.get('/', (req, res, next) => {
-    res.render('index.ejs', { userID: req.user.id });
+    res.status(200).send('Hi there, I`m fine.');
 })
 
 app.get('/test', async (req, res, next) => {
