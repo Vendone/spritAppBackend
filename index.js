@@ -16,8 +16,10 @@ app.use(logger('dev'));
 app.use(express.json());
 const { expressCspHeader, INLINE, NONE, SELF } = require('express-csp-header');
 app.use(cors({
-    origin: "*",
-    credentials: true
+    "origin": "*",
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "preflightContinue": false,
+    "optionsSuccessStatus": 204
 }));
 const { pool } = require('./dbConfig');
 const PORT = process.env.PORT;
