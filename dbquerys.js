@@ -30,7 +30,7 @@ const getAvgFuelById = async (resource, id) => {
     try {
         const client = await pool.connect();
         const result = await client.query(`SELECT AVG(avg_fuel_consumption) FROM ${resource} WHERE user_id = $1`, [id]);
-        const results = { 'results': (result) ? result.rows : null };
+        const results = (result) ? result.rows : null;
         return results;
         client.release();
     } catch (err) {
