@@ -16,7 +16,7 @@ app.use(logger('dev'));
 app.use(express.json());
 const { expressCspHeader, INLINE, NONE, SELF } = require('express-csp-header');
 app.use(cors({
-    origin: [process.env.FRONTEND_URL, process.env.SERVER_URL],
+    origin: "*",
     credentials: true
 }));
 const { pool } = require('./dbConfig');
