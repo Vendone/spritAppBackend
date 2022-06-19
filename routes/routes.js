@@ -1,9 +1,14 @@
 const express = require('express');
 const routesRouter = express.Router();
-const { getData, postData, putById, deleteById } = require('../dbquerys');
+const { getDataById, getAvgFuelById, postData, putById, deleteById } = require('../dbquerys');
 
 routesRouter.get('/', async (req, res, next) => {
-    const response = await getData('routes');
+    const response = await getDataById('routes', 1);
+    res.status(200).send(response);
+})
+
+routesRouter.get('/avgFuel/:id', async (req, res, next) => {
+    const response = await getAvgFuelById('routes', req.params.id);
     res.status(200).send(response);
 })
 

@@ -26,6 +26,19 @@ const getDataById = async (resource, id) => {
     }
 }
 
+const getAvgFuelById = async (resource, id) => {
+    try {
+        const client = await pool.connect();
+        const result = await client.query(`SELECT AVG(avg_fuel_consumption) FROM ${resource} WHERE user_id = $1`, [id]);
+        const results = { 'results': (result) ? result.rows : null };
+        return results;
+        client.release();
+    } catch (err) {
+        console.error(err);
+        return "Error " + err;
+    }
+}
+
 const postData = async (resource, attributeString, insertBody) => {
     const attributeStringArray = attributeString.split(', ');
     let value = '';
@@ -75,4 +88,4 @@ const deleteById = async (resource, id) => {
     }
 }
 
-module.exports = { getData, getDataById, postData, putById, deleteById };
+module.exports = { getData, getDataById, getAvgFuelById, postData, putById, deleteById };
