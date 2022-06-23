@@ -13,14 +13,13 @@ const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const SESSION_SECRET = process.env.SESSION_SECRET;
 const helmet = require('helmet');
-//const cors = require('cors');
-//const { expressCspHeader, INLINE, NONE, SELF } = require('express-csp-header');
-/*app.use(cors({
+const cors = require('cors');
+app.use(cors({
     "origin": "*",
     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
     "preflightContinue": false,
     "optionsSuccessStatus": 204
-}));*/
+}));
 
 app.set('view-engine', 'ejs');
 app.use(helmet({
@@ -51,17 +50,6 @@ app.use(session({
     secure: true,
     cookie: { path: '/', httpsOnly: true, secure: true, sameSite: 'none', maxAge: 100 * 60 * 60 * 24 }
 }));
-
-/*app.use(expressCspHeader({
-    directives: {
-        'default-src': [SELF, 'https://ka-f.fontawesome.com/', 'https://fonts.gstatic.com/'],
-        'script-src': [SELF, INLINE, process.env.FRONTEND_URL, 'https://kit.fontawesome.com'],
-        'style-src': [SELF, INLINE, process.env.FRONTEND_URL, 'https://fonts.googleapis.com/'],
-        'img-src': ['data:', process.env.SERVER_URL],
-        'worker-src': [NONE],
-        'block-all-mixed-content': false
-    }
-}));*/
 
 //Routes
 const routesRouter = require('./routes/routes');
