@@ -23,7 +23,16 @@ const helmet = require('helmet');
 }));*/
 
 app.set('view-engine', 'ejs');
-app.use(helmet());
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            'default-src': ["'self'", 'https://ka-f.fontawesome.com/', 'https://fonts.gstatic.com/'],
+            'script-src': ["'self'", "'inline'", process.env.FRONTEND_URL, 'https://kit.fontawesome.com'],
+            'style-src': ["'self'", "'inline'", process.env.FRONTEND_URL, 'https://fonts.googleapis.com/'],
+            'img-src': ['data:', process.env.SERVER_URL]
+        }
+    },
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }))
 app.use(flash());
