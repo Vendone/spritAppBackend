@@ -14,6 +14,9 @@ const pgSession = require('connect-pg-simple')(session);
 const SESSION_SECRET = process.env.SESSION_SECRET;
 const helmet = require('helmet');
 const cors = require('cors');
+const { check, validationResult } = require('express-validator');
+
+app.set('view-engine', 'ejs');
 app.use(cors({
     "origin": "*",
     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
@@ -21,7 +24,6 @@ app.use(cors({
     "optionsSuccessStatus": 204
 }));
 
-app.set('view-engine', 'ejs');
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
@@ -69,6 +71,18 @@ app.use('/user', usersRouter)
 app.use('/gasstations', gasstationRouter)
 app.use('/tankstops', tankstopsRouter)
 app.use('/auth', authLocal)
+
+
+app.post('/test', [
+    check('name').isEmail(),
+    check('password').isLength({ min: 5 })
+], (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    res.status(200).send(req.body.name);
+})
 
 //Error handling
 app.use(function (err, req, res, next) {
