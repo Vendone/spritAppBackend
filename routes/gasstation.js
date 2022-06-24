@@ -2,19 +2,34 @@ const express = require('express');
 const gasstationsRouter = express.Router();
 const { pool } = require('../dbConfig');
 const { getData, postData, putById, deleteById } = require('../dbquerys');
+const { check, validationResult } = require('express-validator');
 
 gasstationsRouter.get('/', async (req, res, next) => {
     const response = await getData('gasstations');
     res.status(200).send(response);
 })
 
-gasstationsRouter.post('/', async (req, res, next) => {
+gasstationsRouter.post('/', [
+    check('name').notEmpty().isString().blacklist('<>"/;'),
+    check('location').notEmpty().isString().blacklist('<>"/;')
+], async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     const { name, location } = req.body;
     const response = await postData('gasstations', 'name, location', [name, location]);
     res.status(200).send(response);
 })
 
-gasstationsRouter.put('/:id', async (req, res, next) => {
+gasstationsRouter.put('/:id', [
+    check('name').notEmpty().isString().blacklist('<>"/;'),
+    check('location').notEmpty().isString().blacklist('<>"/;')
+], async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     const { name, location } = req.body;
     const id = req.params.id;
     const response = await putById('gasstations', ['name', 'location'], [name, location, id]);
