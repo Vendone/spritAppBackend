@@ -72,18 +72,6 @@ app.use('/gasstations', gasstationRouter)
 app.use('/tankstops', tankstopsRouter)
 app.use('/auth', authLocal)
 
-
-app.post('/test', [
-    check('name').isEmail(),
-    check('password').isLength({ min: 5 })
-], (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-    res.status(200).send(req.body.name);
-})
-
 //Error handling
 app.use(function (err, req, res, next) {
     res.status(500).send({ error: 'something broke' });
