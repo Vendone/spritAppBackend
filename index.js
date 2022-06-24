@@ -5,15 +5,18 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT;
-const path = require("path");
-const flash = require('express-flash');
-const logger = require('morgan');
-const { pool } = require('./dbConfig');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const SESSION_SECRET = process.env.SESSION_SECRET;
 const helmet = require('helmet');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const csurf = require('csurf');
+
+const path = require("path");
+const flash = require('express-flash');
+const logger = require('morgan');
+const { pool } = require('./dbConfig');
 const { check, validationResult } = require('express-validator');
 
 app.set('view-engine', 'ejs');
