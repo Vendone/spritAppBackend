@@ -37,6 +37,7 @@ app.use(helmet({
         }
     },
 }));
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }))
 app.use(flash());
@@ -56,6 +57,28 @@ app.use(session({
     cookie: { path: '/', httpsOnly: true, secure: true, sameSite: 'none', maxAge: 100 * 60 * 60 * 24 }
 }));
 
+// Configure csurf middleware here
+const csrfMiddleware = csurf({
+    cookie: {
+        maxAge: 3000,
+        secure: true,
+        sameSite: 'none'
+    }
+});
+// Use csrf middleware at application level here
+app.use(csrfMiddleware)
+
+// Configure error message middleware here
+const errorMessage = (err, req, res, next) => {
+    if (err.code == "EBADCSRFTOKEN") {
+        res.render('csrfError')
+    } else {
+        next();
+    }
+}
+
+app.use(errorMessage)
+
 //Routes
 const routesRouter = require('./routes/routes');
 const carsRouter = require('./routes/cars');
@@ -65,7 +88,7 @@ const tankstopsRouter = require('./routes/tankstops');
 const authLocal = require('./routes/auth/local');
 
 app.get('/', (req, res, next) => {
-    res.status(200).send('Hi there, I`m fine.');
+    res.status(200).send({ msg: 'Hi there, I`m fine.', csrfToken: req.csrfToken() });
 })
 
 app.use('/routes', routesRouter)
