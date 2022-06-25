@@ -33,7 +33,7 @@ app.use(helmet({
         directives: {
             'default-src': ["'self'", 'https://ka-f.fontawesome.com/', 'https://fonts.gstatic.com/'],
             'script-src': ["'self'", process.env.FRONTEND_URL, 'https://kit.fontawesome.com'],
-            'style-src': ["'self'", process.env.FRONTEND_URL, 'https://fonts.googleapis.com/'],
+            'style-src': ["'self'", "'unsafe-inline", process.env.FRONTEND_URL, 'https://fonts.googleapis.com/'],
             'img-src': ['data:', process.env.SERVER_URL]
         }
     },
