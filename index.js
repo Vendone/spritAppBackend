@@ -61,7 +61,7 @@ app.use(session({
 // Configure csurf middleware here
 const csrfMiddleware = csurf({
     cookie: {
-        maxAge: 300000,
+        maxAge: 86400000,
         secure: true,
         sameSite: 'none'
     }
