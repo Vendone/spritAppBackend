@@ -21,18 +21,19 @@ const { check, validationResult } = require('express-validator');
 
 app.set('view-engine', 'ejs');
 app.use(cors({
-    "origin": "*",
+    "origin": ["http://localhost:3000", "http://localhost:4001", "https://vendosprit.herokuapp.com", "https://vendosprit.netlify.app"],
     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
     "preflightContinue": false,
-    "optionsSuccessStatus": 204
+    "optionsSuccessStatus": 204,
+    "credentials": true
 }));
 
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             'default-src': ["'self'", 'https://ka-f.fontawesome.com/', 'https://fonts.gstatic.com/'],
-            'script-src': ["'self'", "'inline'", process.env.FRONTEND_URL, 'https://kit.fontawesome.com'],
-            'style-src': ["'self'", "'inline'", process.env.FRONTEND_URL, 'https://fonts.googleapis.com/'],
+            'script-src': ["'self'", process.env.FRONTEND_URL, 'https://kit.fontawesome.com'],
+            'style-src': ["'self'", process.env.FRONTEND_URL, 'https://fonts.googleapis.com/'],
             'img-src': ['data:', process.env.SERVER_URL]
         }
     },
@@ -60,13 +61,13 @@ app.use(session({
 // Configure csurf middleware here
 const csrfMiddleware = csurf({
     cookie: {
-        maxAge: 3000,
+        maxAge: 300000,
         secure: true,
         sameSite: 'none'
     }
 });
 // Use csrf middleware at application level here
-app.use(csrfMiddleware)
+app.use(csrfMiddleware);
 
 // Configure error message middleware here
 const errorMessage = (err, req, res, next) => {
@@ -77,7 +78,7 @@ const errorMessage = (err, req, res, next) => {
     }
 }
 
-app.use(errorMessage)
+app.use(errorMessage);
 
 //Routes
 const routesRouter = require('./routes/routes');
@@ -88,8 +89,12 @@ const tankstopsRouter = require('./routes/tankstops');
 const authLocal = require('./routes/auth/local');
 
 app.get('/', (req, res, next) => {
-    res.status(200).send({ msg: 'Hi there, I`m fine.', csrfToken: req.csrfToken() });
+    res.json({ msg: 'Hi there, I`m fine.' });
 })
+
+app.get('/CSRF', (req, res) => {
+    res.json({ CSRFToken: req.CSRFToken() });
+});
 
 app.use('/routes', routesRouter)
 app.use('/cars', carsRouter)

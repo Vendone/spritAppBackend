@@ -2,13 +2,25 @@ const express = require('express');
 const carsRouter = express.Router();
 const { getDataById, postData, putById, deleteById } = require('../dbquerys');
 const { check, validationResult } = require('express-validator');
+const csurf = require('csurf');
+const bodyParser = require('body-parser');
+const parseForm = bodyParser.urlencoded({ extended: false });
+const csrfMiddleware = csurf({
+    cookie: {
+        maxAge: 300000,
+        secure: true,
+        sameSite: 'none'
+    }
+});
+// Use csrf middleware at application level here
+carsRouter.use(csrfMiddleware);
 
 carsRouter.get('/:id', async (req, res, next) => {
     const response = await getDataById('cars', req.params.id);
     res.status(200).send(response);
 })
 
-carsRouter.post('/', [
+carsRouter.post('/', /*[
     check('license_plate').notEmpty().isString().blacklist('<>"/;'),
     check('brand').notEmpty().isString().blacklist('<>"/;'),
     check('modell').notEmpty().isString().blacklist('<>"/;'),
@@ -17,7 +29,7 @@ carsRouter.post('/', [
     check('construction_year').notEmpty().isNumeric().blacklist('<>"/;'),
     check('description').isString().blacklist('<>"/;'),
     check('user_id').isNumeric().blacklist('<>"/;')
-], async (req, res, next) => {
+], */parseForm, csrfMiddleware, async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
