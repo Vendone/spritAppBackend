@@ -4,7 +4,7 @@ const { getData, getDataOrderBy, postData, putById, deleteById } = require('../d
 const { check, validationResult } = require('express-validator');
 
 tankstopsRouter.get('/', async (req, res, next) => {
-    const response = await getDataOrderBy('tank_stops', 'date ASC');
+    const response = await getDataOrderBy('tank_stops', 'date DESC');
     res.status(200).send(response);
 })
 
