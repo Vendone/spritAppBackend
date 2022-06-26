@@ -13,6 +13,19 @@ const getData = async (resource) => {
     }
 }
 
+const getDataOrderBy = async (resource, order) => {
+    try {
+        const client = await pool.connect();
+        const result = await client.query(`SELECT * FROM ${resource} ORDER BY ${order}`);
+        const results = { 'results': (result) ? result.rows : null };
+        return results;
+        client.release();
+    } catch (err) {
+        console.error(err);
+        return "Error " + err;
+    }
+}
+
 const getDataById = async (resource, id) => {
     try {
         const client = await pool.connect();
@@ -88,4 +101,4 @@ const deleteById = async (resource, id) => {
     }
 }
 
-module.exports = { getData, getDataById, getAvgFuelById, postData, putById, deleteById };
+module.exports = { getData, getDataOrderBy, getDataById, getAvgFuelById, postData, putById, deleteById };

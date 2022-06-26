@@ -1,10 +1,10 @@
 const express = require('express');
 const tankstopsRouter = express.Router();
-const { getData, postData, putById, deleteById } = require('../dbquerys');
+const { getData, getDataOrderBy, postData, putById, deleteById } = require('../dbquerys');
 const { check, validationResult } = require('express-validator');
 
 tankstopsRouter.get('/', async (req, res, next) => {
-    const response = await getData('tank_stops');
+    const response = await getDataOrderBy('tank_stops', 'date ASC');
     res.status(200).send(response);
 })
 
