@@ -21,7 +21,7 @@ const { check, validationResult } = require('express-validator');
 
 app.set('view-engine', 'ejs');
 app.use(cors({
-    "origin": ["http://localhost:3000", "http://localhost:4001", "https://vendosprit.herokuapp.com", "https://vendosprit.netlify.app"],
+    "origin": [process.env.FRONTEND_URL, process.env.SERVER_URL],
     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
     "preflightContinue": false,
     "optionsSuccessStatus": 204,
