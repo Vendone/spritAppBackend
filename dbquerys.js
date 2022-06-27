@@ -72,7 +72,7 @@ const postData = async (resource, attributeString, insertBody) => {
     }
 }
 
-const putById = async (resource, whichData, insertBody) => {
+const putById = async (resource, whichData, insertBody, id) => {
     let value = '';
     for (let i = 0; i < whichData.length; i++) {
         value = value + ', ' + whichData[i] + '=' + '$' + [i + 1];
@@ -80,8 +80,8 @@ const putById = async (resource, whichData, insertBody) => {
     value = value.slice(2, value.length);
     try {
         const client = await pool.connect();
-        const result = await client.query(`UPDATE ${resource} SET ${value} WHERE id = $${whichData.length + 1}`, insertBody); //insertBody [attribute1, attribute2,...]
-        return `Item ${insertBody[2]} edited`;
+        const result = await client.query(`UPDATE ${resource} SET ${value} WHERE id = $${id}`, insertBody); //insertBody [attribute1, attribute2,...]
+        return `Item ${insertBody[0]} edited`;
         client.release();
     } catch (err) {
         console.error(err);
