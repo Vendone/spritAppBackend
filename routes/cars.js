@@ -28,6 +28,12 @@ carsRouter.post('/', [
     res.status(200).send(response);
 })
 
+carsRouter.delete('/', async (req, res, next) => {
+    const { id } = req.body;
+    const response = await deleteById('cars', id);
+    res.status(200).send(response);
+})
+
 carsRouter.put('/:id', async (req, res, next) => {
     const { license_plate, brand, modell, fuel, mileage, construction_year, description } = req.body;
     const id = req.params.id;
@@ -43,12 +49,6 @@ carsRouter.put('/:id', async (req, res, next) => {
         res.status(400).send(err);
     }
 
-})
-
-carsRouter.delete('/:id', async (req, res, next) => {
-    const id = req.params.id;
-    const response = await deleteById('cars', id);
-    res.status(200).send(response);
 })
 
 module.exports = carsRouter;
