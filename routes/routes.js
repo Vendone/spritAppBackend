@@ -31,6 +31,12 @@ routesRouter.post('/', [
     res.status(200).send(response);
 })
 
+routesRouter.delete('/', async (req, res, next) => {
+    const { id } = req.body;
+    const response = await deleteById('routes', id);
+    res.status(200).send(response);
+})
+
 routesRouter.put('/:id', [
     check('start_point').notEmpty().isString().blacklist('<>"/;'),
     check('end_point').notEmpty().isString().blacklist('<>"/;'),
@@ -47,12 +53,6 @@ routesRouter.put('/:id', [
     const id = req.params.id;
     const response = await putById('routes', ['start_point', 'end_point', 'mileage_start', 'mileage_stop', 'avg_fuel_consumption', 'car_id'], [start_point, end_point, mileage_start, mileage_stop, avg_fuel_consumption, car_id, req.params.id]);
     res.status(201).send(response);
-})
-
-routesRouter.delete('/:id', async (req, res, next) => {
-    const id = req.params.id;
-    const response = await deleteById('routes', id);
-    res.status(200).send(response);
 })
 
 module.exports = routesRouter;
